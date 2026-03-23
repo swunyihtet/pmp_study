@@ -118,37 +118,55 @@ function updateTimer() {
     const h = Math.floor(diff / 3600).toString().padStart(2, '0');
     const m = Math.floor((diff % 3600) / 60).toString().padStart(2, '0');
     const s = (diff % 60).toString().padStart(2, '0');
-    document.getElementById('timer').textContent = `${h}:${m}:${s}`;
+    document.getElementById('timer').textContent = h + ":" + m + ":" + s;
 }
 
 function renderQuestion() {
     const q = examQs[currentIdx];
-    document.getElementById('qNumber').textContent = `Question ${currentIdx + 1} of ${examQs.length}`;
-    document.getElementById('qText').textContent = q.q;
+    const isMulti = q.correct.length > 1;
+    document.getElementById('qNumber').textContent = "Question " + (currentIdx + 1) + " of " + examQs.length;
+    document.getElementById('qText').innerHTML = q.q + (isMulti ? "<br><small style='color:var(--p-blue); font-weight:bold;'>(Choose " + q.correct.length + " options)</small>" : "");
     
     const container = document.getElementById('options');
     container.innerHTML = '';
     
+    const currentSelection = userAnswers[currentIdx] || [];
+
     q.opts.forEach(opt => {
         const letter = opt.charAt(0);
         const text = opt.substring(2);
         const btn = document.createElement('div');
         btn.className = 'option-btn';
-        if (userAnswers[currentIdx] === letter) btn.classList.add('selected');
+        if (currentSelection.includes(letter)) btn.classList.add('selected');
         
-        btn.innerHTML = `<span class="opt-letter">${letter}</span><span>${text}</span>`;
-        btn.onclick = () => selectOption(letter);
+        btn.innerHTML = '<span class="opt-letter">' + letter + '</span><span>' + text + '</span>';
+        btn.onclick = () => selectOption(letter, isMulti, q.correct.length);
         container.appendChild(btn);
     });
     
     document.getElementById('btnBack').style.visibility = currentIdx === 0 ? 'hidden' : 'visible';
-    document.getElementById('btnNext').style.display = userAnswers[currentIdx] ? 'block' : 'none';
+    const hasEnoughChoices = isMulti ? (currentSelection.length === q.correct.length) : (currentSelection.length > 0);
+    document.getElementById('btnNext').style.display = hasEnoughChoices ? 'block' : 'none';
     document.getElementById('btnNext').textContent = currentIdx === examQs.length - 1 ? 'Finish' : 'Next';
     window.scrollTo(0,0);
 }
 
-function selectOption(letter) {
-    userAnswers[currentIdx] = letter;
+function selectOption(letter, isMulti, maxChoices) {
+    if (!userAnswers[currentIdx]) userAnswers[currentIdx] = [];
+    let selections = userAnswers[currentIdx];
+
+    if (!isMulti) {
+        userAnswers[currentIdx] = [letter];
+    } else {
+        const idx = selections.indexOf(letter);
+        if (idx > -1) {
+            selections.splice(idx, 1);
+        } else {
+            if (selections.length < maxChoices) {
+                selections.push(letter);
+            }
+        }
+    }
     renderQuestion();
 }
 
@@ -172,17 +190,17 @@ function finishExam() {
     clearInterval(timerInterval);
     let correct = 0;
     examQs.forEach((q, idx) => {
-        if (userAnswers[idx] === q.correct[0]) correct++;
+        const userSelection = userAnswers[idx] || [];
+        const correctAnswers = q.correct;
+        const isMatch = userSelection.length === correctAnswers.length && userSelection.every(val => correctAnswers.includes(val));
+        if (isMatch) correct++;
     });
     
     const score = Math.round((correct / examQs.length) * 100);
     document.getElementById('examScreen').style.display = 'none';
     document.getElementById('scoreScreen').style.display = 'flex';
-    document.getElementById('finalScore').textContent = `${score}%`;
-    document.getElementById('scoreMeta').innerHTML = `
-        Correct: <strong>${correct}</strong> / ${examQs.length}<br>
-        Result: <strong style="color:${score >= 70 ? '#166534' : '#991b1b'}">${score >= 70 ? 'PASS' : 'FAIL'}</strong>
-    `;
+    document.getElementById('finalScore').textContent = score + "%";
+    document.getElementById('scoreMeta').innerHTML = "Correct: <strong>" + correct + "</strong> / " + examQs.length + "<br>Result: <strong style='color:" + (score >= 70 ? "#166534" : "#991b1b") + "'>" + (score >= 70 ? "PASS" : "FAIL") + "</strong>";
     document.getElementById('scoreScreen').scrollTop = 0;
 }
 
@@ -197,9 +215,9 @@ function showReview() {
     list.innerHTML = '';
     
     examQs.forEach((q, idx) => {
-        const userAns = userAnswers[idx];
-        const correctAns = q.correct[0];
-        const isCorrect = userAns === correctAns;
+        const userSelection = userAnswers[idx] || [];
+        const correctAnswers = q.correct;
+        const isMatch = userSelection.length === correctAnswers.length && userSelection.every(val => correctAnswers.includes(val));
         
         const card = document.createElement('div');
         card.className = 'review-q-card';
@@ -208,21 +226,18 @@ function showReview() {
         q.opts.forEach(opt => {
             const letter = opt.charAt(0);
             let stateClass = '';
-            if (letter === correctAns) stateClass = 'is-correct';
-            else if (letter === userAns && !isCorrect) stateClass = 'user-wrong';
-            optsHtml += `<div class="review-opt ${stateClass}"><strong>${letter}</strong> ${opt.substring(2)}</div>`;
+            if (correctAnswers.includes(letter)) stateClass = 'is-correct';
+            else if (userSelection.includes(letter) && !correctAnswers.includes(letter)) stateClass = 'user-wrong';
+            optsHtml += '<div class="review-opt ' + stateClass + '"><strong>' + letter + '</strong> ' + opt.substring(2) + '</div>';
         });
         
-        card.innerHTML = `
-            <div class="status-tag ${isCorrect ? 'status-correct' : 'status-wrong'}">${isCorrect ? 'Correct' : 'Incorrect'}</div>
-            <div style="font-weight: bold; margin-bottom: 15px;">Question ${idx + 1}: ${q.q}</div>
-            <div class="review-opts">${optsHtml}</div>
-            <div class="review-exp"><strong>Explanation:</strong> ${q.explanation || 'No explanation provided.'}</div>
-        `;
+        card.innerHTML = '<div class="status-tag ' + (isMatch ? 'status-correct' : 'status-wrong') + '">' + (isMatch ? 'Correct' : 'Incorrect') + '</div>' +
+            '<div style="font-weight: bold; margin-bottom: 15px;">Question ' + (idx + 1) + ': ' + q.q + '</div>' +
+            '<div class="review-opts">' + optsHtml + '</div>' +
+            '<div class="review-exp"><strong>Explanation:</strong> ' + (q.explanation || 'No explanation provided.') + '</div>';
         list.appendChild(card);
     });
     
-    // Jump to top of the fixed scroll container
     screen.scrollTop = 0;
 }
 </script>
