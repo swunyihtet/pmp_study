@@ -34,6 +34,15 @@ body { background: var(--p-bg); color: #333; font-family: Arial, sans-serif; mar
 .start-option.selected { border-color: var(--p-blue); background: var(--p-light); }
 .score-big { font-size: 4rem; color: var(--p-blue); font-weight: bold; margin: 20px 0; }
 @media (max-width: 600px) { .exam-body { padding-top: 15px; } .q-text { font-size: 1rem; } }
+
+.review-q-card { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-bottom: 20px; text-align: left; width: 100%; box-sizing: border-box; }
+.review-opt { padding: 10px; margin: 5px 0; border-radius: 4px; border: 1px solid #eee; font-size: 0.9rem; }
+.review-opt.user-wrong { background: #ffebee; border-color: #ef5350; }
+.review-opt.is-correct { background: #e8f5e9; border-color: #66bb6a; font-weight: bold; }
+.review-exp { margin-top: 15px; padding: 15px; background: #f0f7ff; border-left: 4px solid var(--p-blue); font-size: 0.85rem; line-height: 1.5; color: #444; }
+.status-tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; }
+.status-correct { background: #e8f5e9; color: #2e7d32; }
+.status-wrong { background: #ffebee; color: #c62828; }
 </style>
 </head>
 <body>
@@ -70,7 +79,13 @@ body { background: var(--p-bg); color: #333; font-family: Arial, sans-serif; mar
     <h1>Exam Result</h1>
     <div class="score-big" id="finalScore">0%</div>
     <div id="scoreMeta" style="margin-bottom:30px; font-size:1.2rem"></div>
-    <button class="btn-p" onclick="location.reload()">Start New Session</button>
+    <button class="btn-p" id="btnShowReview" onclick="showReview()">Review Answers</button>
+<button class="btn-p" onclick="location.reload()">New Session</button>
+    <div id="reviewContainer" style="display:none; width: 100%; max-width: 800px; margin-top: 40px; border-top: 2px solid #eee; pt-20">
+        <h2 style="margin: 30px 0; color: #333;">Detailed Review</h2>
+        <div id="reviewList"></div>
+    </div>
+
 </div>
 
 <script>
@@ -176,6 +191,46 @@ function finishExam() {
         Correct: ${correct} / ${examQs.length}<br>
         Result: <span style="color:${score >= 70 ? 'green' : 'red'}">${score >= 70 ? 'PASS' : 'FAIL'}</span>
     `;
+}
+
+function showReview() {
+    const container = document.getElementById('reviewContainer');
+    const list = document.getElementById('reviewList');
+    const btn = document.getElementById('btnShowReview');
+    
+    container.style.display = 'block';
+    btn.style.display = 'none';
+    list.innerHTML = '';
+    
+    examQs.forEach((q, idx) => {
+        const userAns = userAnswers[idx];
+        const correctAns = q.correct[0];
+        const isCorrect = userAns === correctAns;
+        
+        const card = document.createElement('div');
+        card.className = 'review-q-card';
+        
+        let optsHtml = '';
+        q.opts.forEach(opt => {
+            const letter = opt.charAt(0);
+            let stateClass = '';
+            if (letter === correctAns) stateClass = 'is-correct';
+            else if (letter === userAns && !isCorrect) stateClass = 'user-wrong';
+            
+            optsHtml += `<div class="review-opt ${stateClass}"><strong>${letter}</strong> ${opt.substring(2)}</div>`;
+        });
+        
+        card.innerHTML = `
+            <div class="status-tag ${isCorrect ? 'status-correct' : 'status-wrong'}">${isCorrect ? 'Correct' : 'Incorrect'}</div>
+            <div style="font-weight: bold; margin-bottom: 15px;">Question ${idx + 1}: ${q.q}</div>
+            <div class="review-opts">${optsHtml}</div>
+            <div class="review-exp"><strong>Explanation:</strong> ${q.explanation || 'No explanation provided.'}</div>
+        `;
+        list.appendChild(card);
+    });
+    
+    // Scroll to review
+    container.scrollIntoView({ behavior: 'smooth' });
 }
 </script>
 </body>
