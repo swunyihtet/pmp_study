@@ -184,7 +184,7 @@ body {
 
 </style>
 </head>
-<body class="exam-mode">
+<body class="exam-mode" class="exam-mode">
 
 <div id="startScreen">
   <h1>PMP Practice Exam 2</h1>
@@ -542,6 +542,102 @@ function showScore() {
         Final Score: <strong>${correct} / ${total}</strong>
     </div>
     <div style="color: ${pct >= 70 ? 'green' : 'red'}; font-weight: bold; margin-bottom: 10px;">
+        ${pct >= 70 ? 'PASS' : 'FAIL'} (Passing Score: 70%)
+    </div>
+  `;
+  
+  document.getElementById('scoreCorrect').textContent=correct;
+  document.getElementById('scoreWrong').textContent=wrong;
+  document.getElementById('scoreSkipped').textContent=skipped;
+}
+
+
+// --- Pearson VUE Override ---
+// Remove check answer button and auto-provide Next button upon selection
+const styleSheet = document.createElement("style");
+styleSheet.innerText = `
+  #submitBtn { display: none !important; }
+  .option-btn.selected { border-width: 3px; }
+`;
+document.head.appendChild(styleSheet);
+
+// Override toggleOption to trigger "submission" immediately
+const originalToggleOption = window.toggleOption;
+window.toggleOption = function(letter, btn, isMulti) {
+    if(answered) return;
+    
+    if(!isMulti) {
+        // Single choice: record and show Next immediately
+        document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+        selected = [letter];
+        btn.classList.add('selected');
+        
+        // Treat selection as submission in Exam Mode
+        processPearsonSubmission();
+    } else {
+        // Multi choice: standard toggle, but show a 'Confirm' or keep Next hidden until logic?
+        // For simplicity in PMP style, usually single choice.
+        // If multi, we need a way to say "done". Let's keep Next hidden until manual trigger if multi?
+        // But requested: "Provide Next Button once clicked answer"
+        const idx = selected.indexOf(letter);
+        if(idx === -1) { selected.push(letter); btn.classList.add('selected'); }
+        else { selected.splice(idx, 1); btn.classList.remove('selected'); }
+        
+        if(selected.length > 0) {
+            document.getElementById('nextBtn').style.display = 'inline-block';
+        }
+    }
+};
+
+function processPearsonSubmission() {
+  if(answered || selected.length === 0) return;
+  
+  const q = examQuestions[current];
+  const correctSet = new Set(q.correct);
+  const selectedSet = new Set(selected);
+  const isCorrect = [...correctSet].every(c => selectedSet.has(c)) && [...selectedSet].every(s => correctSet.has(s));
+  
+  if(isCorrect) correct++; else wrong++;
+  
+  // Mark as answered but don't show feedback
+  answered = true;
+  qHistory[current] = {selected:[...selected], answered:true, isCorrect:isCorrect, wasSkipped:false};
+  
+  document.querySelectorAll('.option-btn').forEach(btn => {
+    btn.disabled = true;
+  });
+
+  if(current < examQuestions.length - 1) {
+    document.getElementById('nextBtn').style.display = 'inline-block';
+    document.getElementById('skipBtn').style.display = 'none';
+  } else {
+    setTimeout(showScore, 500);
+  }
+}
+
+// Ensure Next button logic handles the state transition
+const originalNextQuestion = window.nextQuestion;
+window.nextQuestion = function() {
+    if(!answered && selected.length > 0) {
+        processPearsonSubmission();
+    }
+    originalNextQuestion();
+};
+
+// Override showScore to show detailed marks
+function showScore() {
+  stopTimer();
+  document.getElementById('examScreen').style.display='none';
+  document.getElementById('scoreScreen').style.display='flex';
+  const total=examQuestions.length;
+  const pct=Math.round(correct/total*100);
+  
+  document.getElementById('scorePct').textContent = pct + '%';
+  document.getElementById('scoreDetails').innerHTML = `
+    <div style="font-size: 1.2rem; margin-bottom: 20px;">
+        Final Score: <strong>${correct} / ${total}</strong>
+    </div>
+    <div style="color: ${pct >= 70 ? '#2e7d32' : '#c62828'}; font-weight: bold; margin-bottom: 10px;">
         ${pct >= 70 ? 'PASS' : 'FAIL'} (Passing Score: 70%)
     </div>
   `;
