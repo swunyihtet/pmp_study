@@ -52,6 +52,15 @@ body { background: var(--p-bg); color: #333; font-family: Arial, sans-serif; mar
 .status-tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; }
 .status-correct { background: #e8f5e9; color: #2e7d32; }
 .status-wrong { background: #ffebee; color: #c62828; }
+
+.review-q-card { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-bottom: 20px; text-align: left; width: 100%; box-sizing: border-box; }
+.review-opt { padding: 10px; margin: 5px 0; border-radius: 4px; border: 1px solid #eee; font-size: 0.9rem; }
+.review-opt.user-wrong { background: #ffebee; border-color: #ef5350; }
+.review-opt.is-correct { background: #e8f5e9; border-color: #66bb6a; font-weight: bold; }
+.review-exp { margin-top: 15px; padding: 15px; background: #f0f7ff; border-left: 4px solid var(--p-blue); font-size: 0.85rem; line-height: 1.5; color: #444; }
+.status-tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; }
+.status-correct { background: #e8f5e9; color: #2e7d32; }
+.status-wrong { background: #ffebee; color: #c62828; }
 </style>
 </head>
 <body>
@@ -281,6 +290,55 @@ function showReview() {
     
     // Jump to the top of the score/review screen
     scoreScreen.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showReview() {
+    const scoreScreen = document.getElementById('scoreScreen');
+    const container = document.getElementById('reviewContainer');
+    const list = document.getElementById('reviewList');
+    const btn = document.getElementById('btnShowReview');
+    
+    container.style.display = 'block';
+    btn.style.display = 'none';
+    list.innerHTML = '';
+    
+    examQs.forEach((q, idx) => {
+        const userAns = userAnswers[idx];
+        const correctAns = q.correct[0];
+        const isCorrect = userAns === correctAns;
+        
+        const card = document.createElement('div');
+        card.className = 'review-q-card';
+        
+        let optsHtml = '';
+        q.opts.forEach(opt => {
+            const letter = opt.charAt(0);
+            let stateClass = '';
+            if (letter === correctAns) stateClass = 'is-correct';
+            else if (letter === userAns && !isCorrect) stateClass = 'user-wrong';
+            
+            optsHtml += `<div class="review-opt ${stateClass}"><strong>${letter}</strong> ${opt.substring(2)}</div>`;
+        });
+        
+        card.innerHTML = `
+            <div class="status-tag ${isCorrect ? 'status-correct' : 'status-wrong'}">${isCorrect ? 'Correct' : 'Incorrect'}</div>
+            <div style="font-weight: bold; margin-bottom: 15px;">Question ${idx + 1}: ${q.q}</div>
+            <div class="review-opts">${optsHtml}</div>
+            <div class="review-exp"><strong>Explanation:</strong> ${q.explanation || 'No explanation provided.'}</div>
+        `;
+        list.appendChild(card);
+    });
+    
+    // Comprehensive scroll reset
+    scoreScreen.scrollTop = 0;
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    scoreScreen.scrollTo({ top: 0, behavior: 'instant' });
+    
+    // Safety delay to ensure layout has shifted before final scroll
+    setTimeout(() => {
+        scoreScreen.scrollTop = 0;
+        window.scrollTo(0, 0);
+    }, 10);
 }
 </script>
 </body>
