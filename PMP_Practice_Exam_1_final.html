@@ -37,6 +37,9 @@ body { background: var(--p-bg); color: #333; font-family: Arial, sans-serif; mar
 .status-correct { background: #e8f5e9; color: #166534; }
 .status-wrong { background: #ffebee; color: #991b1b; }
 .score-big { font-size: 5rem; color: var(--p-blue); font-weight: 800; margin: 20px 0; }
+
+.btn-home { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); color: white; padding: 4px 12px; border-radius: 4px; font-size: 0.75rem; text-decoration: none; font-weight: bold; text-transform: uppercase; transition: all 0.2s; }
+.btn-home:hover { background: rgba(255,255,255,0.3); border-color: white; }
 </style>
 </head>
 <body>
@@ -55,7 +58,7 @@ body { background: var(--p-bg); color: #333; font-family: Arial, sans-serif; mar
 
 <div id="examScreen">
     <div class="exam-header">
-        <h2>PMP Simulation</h2>
+        <h2>PMP Simulation</h2><a href="index.html" class="btn-home">Exit to Home</a>
         <div id="timer" style="font-weight:bold">00:00:00</div>
     </div>
     <div class="exam-body">
