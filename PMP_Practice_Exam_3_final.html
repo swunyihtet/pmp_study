@@ -72,7 +72,7 @@ body { background: var(--p-bg); color: #333; font-family: Arial, sans-serif; mar
 <div id="scoreScreen" style="display:none">
     <h1 id="scoreHeading">Exam Result</h1>
     <div class="score-big" id="finalScore">0%</div>
-    <div id="scoreMeta" style="margin-bottom:30px; text-align:center;"></div>
+    <div id="scoreMeta" style="margin-bottom:30px; text-align:center; font-size:1.1rem; line-height:1.6;"></div>
     
     <div style="display:flex; gap:10px; margin-bottom:40px">
         <button class="btn-p" id="btnShowReview" onclick="showReview()">Review All</button>
@@ -113,12 +113,17 @@ function startExam() {
     renderQuestion();
 }
 
+function getFormattedTime(diffMs) {
+    const totalSecs = Math.floor(diffMs / 1000);
+    const h = Math.floor(totalSecs / 3600).toString().padStart(2, '0');
+    const m = Math.floor((totalSecs % 3600) / 60).toString().padStart(2, '0');
+    const s = (totalSecs % 60).toString().padStart(2, '0');
+    return h + ":" + m + ":" + s;
+}
+
 function updateTimer() {
-    const diff = Math.floor((Date.now() - startTime) / 1000);
-    const h = Math.floor(diff / 3600).toString().padStart(2, '0');
-    const m = Math.floor((diff % 3600) / 60).toString().padStart(2, '0');
-    const s = (diff % 60).toString().padStart(2, '0');
-    document.getElementById('timer').textContent = h + ":" + m + ":" + s;
+    const diff = Date.now() - startTime;
+    document.getElementById('timer').textContent = getFormattedTime(diff);
 }
 
 function renderQuestion() {
@@ -187,7 +192,10 @@ function prevQ() {
 }
 
 function finishExam() {
+    const endTime = Date.now();
+    const timeSpentMs = endTime - startTime;
     clearInterval(timerInterval);
+    
     let correct = 0;
     examQs.forEach((q, idx) => {
         const userSelection = userAnswers[idx] || [];
@@ -200,7 +208,12 @@ function finishExam() {
     document.getElementById('examScreen').style.display = 'none';
     document.getElementById('scoreScreen').style.display = 'flex';
     document.getElementById('finalScore').textContent = score + "%";
-    document.getElementById('scoreMeta').innerHTML = "Correct: <strong>" + correct + "</strong> / " + examQs.length + "<br>Result: <strong style='color:" + (score >= 70 ? "#166534" : "#991b1b") + "'>" + (score >= 70 ? "PASS" : "FAIL") + "</strong>";
+    
+    document.getElementById('scoreMeta').innerHTML = 
+        "Correct: <strong>" + correct + "</strong> / " + examQs.length + "<br>" +
+        "Time Elapsed: <strong>" + getFormattedTime(timeSpentMs) + "</strong><br>" +
+        "Result: <strong style='color:" + (score >= 70 ? "#166534" : "#991b1b") + "'>" + (score >= 70 ? "PASS" : "FAIL") + "</strong>";
+    
     document.getElementById('scoreScreen').scrollTop = 0;
 }
 
