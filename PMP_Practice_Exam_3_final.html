@@ -7,98 +7,56 @@
     <style>
 :root {
     --p-blue: #004b8d;
-    --p-dark: #003366;
-    --p-bg: #e9e9e9;
+    --p-bg: #f5f5f5;
     --p-light: #f0f7ff;
     --p-selected: #cce0f5;
     --p-footer: #cccccc;
 }
-body { background: var(--p-bg); color: #333; font-family: Arial, sans-serif; margin:0; padding:0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-#startScreen, #scoreScreen { position: fixed; inset: 0; background: white; z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; overflow-y: auto; }
-#examScreen { display: none; flex-direction: column; height: 100vh; width: 100%; background: white; }
-.exam-header { background: var(--p-blue); color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+body { background: var(--p-bg); color: #333; font-family: Arial, sans-serif; margin:0; padding:0; min-height: 100vh; }
+#startScreen, #scoreScreen { position: fixed; inset: 0; background: white; z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 40px 20px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+#examScreen { display: none; flex-direction: column; min-height: 100vh; background: white; }
+.exam-header { position: sticky; top: 0; background: var(--p-blue); color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 100; }
 .exam-header h2 { font-size: 0.9rem; margin: 0; text-transform: uppercase; }
-.exam-body { flex: 1; overflow-y: auto; padding: 30px 20px 100px; max-width: 900px; margin: 0 auto; width: 100%; box-sizing: border-box; }
+.exam-body { flex: 1; padding: 30px 20px 120px; max-width: 900px; margin: 0 auto; width: 100%; box-sizing: border-box; }
 .q-number { font-size: 1rem; font-weight: bold; margin-bottom: 15px; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
-.q-text { font-size: 1.1rem; line-height: 1.5; margin-bottom: 30px; }
-.option-btn { display: flex; align-items: flex-start; padding: 12px; border: 1px solid transparent; background: white; cursor: pointer; width: 100%; text-align: left; margin-bottom: 2px; }
+.q-text { font-size: 1.1rem; line-height: 1.5; margin-bottom: 30px; font-weight: 500; }
+.option-btn { display: flex; align-items: flex-start; padding: 15px; border: 1px solid transparent; background: white; cursor: pointer; width: 100%; text-align: left; margin-bottom: 2px; }
 .option-btn:hover { background: var(--p-light); }
 .option-btn.selected { background: var(--p-selected) !important; border: 1px solid var(--p-blue); }
-.opt-letter { min-width: 24px; height: 24px; border: 2px solid #555; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px; font-weight: bold; font-size: 0.8rem; flex-shrink: 0; }
+.opt-letter { min-width: 26px; height: 26px; border: 2px solid #555; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; font-weight: bold; font-size: 0.85rem; flex-shrink: 0; }
 .option-btn.selected .opt-letter { background: var(--p-blue); color: white; border-color: var(--p-blue); }
-.actions { position: fixed; bottom: 0; left: 0; right: 0; background: var(--p-footer); padding: 12px 20px; display: flex; justify-content: space-between; border-top: 1px solid #999; z-index: 100; }
-.btn-p { background: linear-gradient(to bottom, #fff, #e5e5e5); border: 1px solid #888; padding: 8px 20px; font-weight: bold; cursor: pointer; border-radius: 3px; font-size: 0.85rem; min-width: 90px; text-transform: uppercase; }
-.btn-next { color: var(--p-blue); border-color: var(--p-blue); display: none; }
-.start-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; width: 100%; max-width: 400px; }
-.start-option { background: #f8f9fa; border: 1px solid #ddd; padding: 15px; border-radius: 8px; cursor: pointer; text-align: center; }
-.start-option.selected { border-color: var(--p-blue); background: var(--p-light); }
-.score-big { font-size: 4rem; color: var(--p-blue); font-weight: bold; margin: 20px 0; }
-@media (max-width: 600px) { .exam-body { padding-top: 15px; } .q-text { font-size: 1rem; } }
-
-.review-q-card { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-bottom: 20px; text-align: left; width: 100%; box-sizing: border-box; }
-.review-opt { padding: 10px; margin: 5px 0; border-radius: 4px; border: 1px solid #eee; font-size: 0.9rem; }
-.review-opt.user-wrong { background: #ffebee; border-color: #ef5350; }
+.actions { position: fixed; bottom: 0; left: 0; right: 0; background: var(--p-footer); padding: 15px 30px; display: flex; justify-content: space-between; border-top: 1px solid #999; z-index: 500; }
+.btn-p { background: linear-gradient(to bottom, #fff, #e5e5e5); border: 1px solid #888; padding: 10px 25px; font-weight: bold; cursor: pointer; border-radius: 3px; font-size: 0.9rem; min-width: 100px; text-transform: uppercase; }
+.btn-next { color: var(--p-blue); border-color: var(--p-blue); }
+.review-q-card { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-bottom: 25px; text-align: left; width: 100%; box-sizing: border-box; }
+.review-opt { padding: 10px; margin: 5px 0; border-radius: 4px; border: 1px solid #eee; font-size: 0.95rem; display: flex; align-items: flex-start; gap: 10px; }
 .review-opt.is-correct { background: #e8f5e9; border-color: #66bb6a; font-weight: bold; }
-.review-exp { margin-top: 15px; padding: 15px; background: #f0f7ff; border-left: 4px solid var(--p-blue); font-size: 0.85rem; line-height: 1.5; color: #444; }
-.status-tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; }
-.status-correct { background: #e8f5e9; color: #2e7d32; }
-.status-wrong { background: #ffebee; color: #c62828; }
-
-.review-q-card { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-bottom: 20px; text-align: left; width: 100%; box-sizing: border-box; }
-.review-opt { padding: 10px; margin: 5px 0; border-radius: 4px; border: 1px solid #eee; font-size: 0.9rem; }
 .review-opt.user-wrong { background: #ffebee; border-color: #ef5350; }
-.review-opt.is-correct { background: #e8f5e9; border-color: #66bb6a; font-weight: bold; }
-.review-exp { margin-top: 15px; padding: 15px; background: #f0f7ff; border-left: 4px solid var(--p-blue); font-size: 0.85rem; line-height: 1.5; color: #444; }
-.status-tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; }
-.status-correct { background: #e8f5e9; color: #2e7d32; }
-.status-wrong { background: #ffebee; color: #c62828; }
-
-.review-q-card { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-bottom: 20px; text-align: left; width: 100%; box-sizing: border-box; }
-.review-opt { padding: 10px; margin: 5px 0; border-radius: 4px; border: 1px solid #eee; font-size: 0.9rem; }
-.review-opt.user-wrong { background: #ffebee; border-color: #ef5350; }
-.review-opt.is-correct { background: #e8f5e9; border-color: #66bb6a; font-weight: bold; }
-.review-exp { margin-top: 15px; padding: 15px; background: #f0f7ff; border-left: 4px solid var(--p-blue); font-size: 0.85rem; line-height: 1.5; color: #444; }
-.status-tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; }
-.status-correct { background: #e8f5e9; color: #2e7d32; }
-.status-wrong { background: #ffebee; color: #c62828; }
-
-.review-q-card { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-bottom: 20px; text-align: left; width: 100%; box-sizing: border-box; }
-.review-opt { padding: 10px; margin: 5px 0; border-radius: 4px; border: 1px solid #eee; font-size: 0.9rem; }
-.review-opt.user-wrong { background: #ffebee; border-color: #ef5350; }
-.review-opt.is-correct { background: #e8f5e9; border-color: #66bb6a; font-weight: bold; }
-.review-exp { margin-top: 15px; padding: 15px; background: #f0f7ff; border-left: 4px solid var(--p-blue); font-size: 0.85rem; line-height: 1.5; color: #444; }
-.status-tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; }
-.status-correct { background: #e8f5e9; color: #2e7d32; }
-.status-wrong { background: #ffebee; color: #c62828; }
-
-.review-q-card { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-bottom: 20px; text-align: left; width: 100%; box-sizing: border-box; }
-.review-opt { padding: 10px; margin: 5px 0; border-radius: 4px; border: 1px solid #eee; font-size: 0.9rem; }
-.review-opt.user-wrong { background: #ffebee; border-color: #ef5350; }
-.review-opt.is-correct { background: #e8f5e9; border-color: #66bb6a; font-weight: bold; }
-.review-exp { margin-top: 15px; padding: 15px; background: #f0f7ff; border-left: 4px solid var(--p-blue); font-size: 0.85rem; line-height: 1.5; color: #444; }
-.status-tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; }
-.status-correct { background: #e8f5e9; color: #2e7d32; }
-.status-wrong { background: #ffebee; color: #c62828; }
+.review-exp { margin-top: 15px; padding: 15px; background: #f8fafc; border-left: 4px solid var(--p-blue); font-size: 0.9rem; line-height: 1.6; color: #334155; }
+.status-tag { display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; margin-bottom: 12px; }
+.status-correct { background: #e8f5e9; color: #166534; }
+.status-wrong { background: #ffebee; color: #991b1b; }
+.score-big { font-size: 5rem; color: var(--p-blue); font-weight: 800; margin: 20px 0; }
 </style>
 </head>
 <body>
 
 <div id="startScreen">
     <h1 style="margin-bottom:10px">PMP Practice Exam</h1>
-    <p style="color:#666; margin-bottom:30px">Select question count to begin:</p>
-    <div class="start-options">
-        <div class="start-option" onclick="setCount(this, 10)">10 Questions</div>
-        <div class="start-option" onclick="setCount(this, 25)">25 Questions</div>
-        <div class="start-option" onclick="setCount(this, 50)">50 Questions</div>
-        <div class="start-option selected" onclick="setCount(this, 175)">Full Exam</div>
+    <p style="color:#666; margin-bottom:30px">Choose assessment volume:</p>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:30px; width:100%; max-width:400px;">
+        <button class="btn-p" onclick="setCount(10)">10 Questions</button>
+        <button class="btn-p" onclick="setCount(25)">25 Questions</button>
+        <button class="btn-p" onclick="setCount(50)">50 Questions</button>
+        <button class="btn-p" onclick="setCount(175)">Full Exam</button>
     </div>
-    <button class="btn-p" style="padding:15px 40px; font-size:1rem" onclick="startExam()">Begin Exam</button>
+    <button class="btn-p" style="padding:15px 50px; background:var(--p-blue); color:white; border:none;" onclick="startExam()">Launch Exam</button>
 </div>
 
 <div id="examScreen">
     <div class="exam-header">
         <h2>PMP Simulation</h2>
-        <div id="timer">00:00:00</div>
+        <div id="timer" style="font-weight:bold">00:00:00</div>
     </div>
     <div class="exam-body">
         <div id="qNumber" class="q-number"></div>
@@ -112,16 +70,19 @@ body { background: var(--p-bg); color: #333; font-family: Arial, sans-serif; mar
 </div>
 
 <div id="scoreScreen" style="display:none">
-    <h1>Exam Result</h1>
+    <h1 id="scoreHeading">Exam Result</h1>
     <div class="score-big" id="finalScore">0%</div>
-    <div id="scoreMeta" style="margin-bottom:30px; font-size:1.2rem"></div>
-    <button class="btn-p" id="btnShowReview" onclick="showReview()">Review Answers</button>
-<button class="btn-p" onclick="location.reload()">New Session</button>
-    <div id="reviewContainer" style="display:none; width: 100%; max-width: 800px; margin-top: 40px; border-top: 2px solid #eee; pt-20">
-        <h2 style="margin: 30px 0; color: #333;">Detailed Review</h2>
-        <div id="reviewList"></div>
+    <div id="scoreMeta" style="margin-bottom:30px; text-align:center;"></div>
+    
+    <div style="display:flex; gap:10px; margin-bottom:40px">
+        <button class="btn-p" id="btnShowReview" onclick="showReview()">Review All</button>
+        <button class="btn-p" onclick="location.reload()">Restart</button>
     </div>
 
+    <div id="reviewContainer" style="display:none; width:100%; max-width:800px; border-top:1px solid #ddd; padding-top:40px;">
+        <div id="reviewList"></div>
+        <button class="btn-p" style="width:100%; margin-top:20px" onclick="location.reload()">Start New Session</button>
+    </div>
 </div>
 
 <script>
@@ -133,11 +94,7 @@ let chosenCount = 175;
 let startTime;
 let timerInterval;
 
-function setCount(el, n) {
-    chosenCount = n;
-    document.querySelectorAll('.start-option').forEach(opt => opt.classList.remove('selected'));
-    el.classList.add('selected');
-}
+function setCount(n) { chosenCount = n; startExam(); }
 
 function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -180,20 +137,19 @@ function renderQuestion() {
         if (userAnswers[currentIdx] === letter) btn.classList.add('selected');
         
         btn.innerHTML = `<span class="opt-letter">${letter}</span><span>${text}</span>`;
-        btn.onclick = () => selectOption(letter, btn);
+        btn.onclick = () => selectOption(letter);
         container.appendChild(btn);
     });
     
     document.getElementById('btnBack').style.visibility = currentIdx === 0 ? 'hidden' : 'visible';
     document.getElementById('btnNext').style.display = userAnswers[currentIdx] ? 'block' : 'none';
     document.getElementById('btnNext').textContent = currentIdx === examQs.length - 1 ? 'Finish' : 'Next';
+    window.scrollTo(0,0);
 }
 
-function selectOption(letter, btn) {
+function selectOption(letter) {
     userAnswers[currentIdx] = letter;
-    document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
-    btn.classList.add('selected');
-    document.getElementById('btnNext').style.display = 'block';
+    renderQuestion();
 }
 
 function nextQ() {
@@ -224,18 +180,20 @@ function finishExam() {
     document.getElementById('scoreScreen').style.display = 'flex';
     document.getElementById('finalScore').textContent = `${score}%`;
     document.getElementById('scoreMeta').innerHTML = `
-        Correct: ${correct} / ${examQs.length}<br>
-        Result: <span style="color:${score >= 70 ? 'green' : 'red'}">${score >= 70 ? 'PASS' : 'FAIL'}</span>
+        Correct: <strong>${correct}</strong> / ${examQs.length}<br>
+        Result: <strong style="color:${score >= 70 ? '#166534' : '#991b1b'}">${score >= 70 ? 'PASS' : 'FAIL'}</strong>
     `;
+    document.getElementById('scoreScreen').scrollTop = 0;
 }
 
 function showReview() {
     const container = document.getElementById('reviewContainer');
     const list = document.getElementById('reviewList');
-    const btn = document.getElementById('btnShowReview');
+    const screen = document.getElementById('scoreScreen');
     
     container.style.display = 'block';
-    btn.style.display = 'none';
+    document.getElementById('btnShowReview').style.display = 'none';
+    document.getElementById('scoreHeading').textContent = 'Review Mode';
     list.innerHTML = '';
     
     examQs.forEach((q, idx) => {
@@ -252,7 +210,6 @@ function showReview() {
             let stateClass = '';
             if (letter === correctAns) stateClass = 'is-correct';
             else if (letter === userAns && !isCorrect) stateClass = 'user-wrong';
-            
             optsHtml += `<div class="review-opt ${stateClass}"><strong>${letter}</strong> ${opt.substring(2)}</div>`;
         });
         
@@ -265,208 +222,8 @@ function showReview() {
         list.appendChild(card);
     });
     
-    // Scroll to review
-    container.scrollIntoView({ behavior: 'smooth' });
-}
-
-function showReview() {
-    const scoreScreen = document.getElementById('scoreScreen');
-    const container = document.getElementById('reviewContainer');
-    const list = document.getElementById('reviewList');
-    const btn = document.getElementById('btnShowReview');
-    
-    container.style.display = 'block';
-    btn.style.display = 'none';
-    list.innerHTML = '';
-    
-    examQs.forEach((q, idx) => {
-        const userAns = userAnswers[idx];
-        const correctAns = q.correct[0];
-        const isCorrect = userAns === correctAns;
-        
-        const card = document.createElement('div');
-        card.className = 'review-q-card';
-        
-        let optsHtml = '';
-        q.opts.forEach(opt => {
-            const letter = opt.charAt(0);
-            let stateClass = '';
-            if (letter === correctAns) stateClass = 'is-correct';
-            else if (letter === userAns && !isCorrect) stateClass = 'user-wrong';
-            
-            optsHtml += `<div class="review-opt ${stateClass}"><strong>${letter}</strong> ${opt.substring(2)}</div>`;
-        });
-        
-        card.innerHTML = `
-            <div class="status-tag ${isCorrect ? 'status-correct' : 'status-wrong'}">${isCorrect ? 'Correct' : 'Incorrect'}</div>
-            <div style="font-weight: bold; margin-bottom: 15px;">Question ${idx + 1}: ${q.q}</div>
-            <div class="review-opts">${optsHtml}</div>
-            <div class="review-exp"><strong>Explanation:</strong> ${q.explanation || 'No explanation provided.'}</div>
-        `;
-        list.appendChild(card);
-    });
-    
-    // Jump to the top of the score/review screen
-    scoreScreen.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function showReview() {
-    const scoreScreen = document.getElementById('scoreScreen');
-    const container = document.getElementById('reviewContainer');
-    const list = document.getElementById('reviewList');
-    const btn = document.getElementById('btnShowReview');
-    
-    container.style.display = 'block';
-    btn.style.display = 'none';
-    list.innerHTML = '';
-    
-    examQs.forEach((q, idx) => {
-        const userAns = userAnswers[idx];
-        const correctAns = q.correct[0];
-        const isCorrect = userAns === correctAns;
-        
-        const card = document.createElement('div');
-        card.className = 'review-q-card';
-        
-        let optsHtml = '';
-        q.opts.forEach(opt => {
-            const letter = opt.charAt(0);
-            let stateClass = '';
-            if (letter === correctAns) stateClass = 'is-correct';
-            else if (letter === userAns && !isCorrect) stateClass = 'user-wrong';
-            
-            optsHtml += `<div class="review-opt ${stateClass}"><strong>${letter}</strong> ${opt.substring(2)}</div>`;
-        });
-        
-        card.innerHTML = `
-            <div class="status-tag ${isCorrect ? 'status-correct' : 'status-wrong'}">${isCorrect ? 'Correct' : 'Incorrect'}</div>
-            <div style="font-weight: bold; margin-bottom: 15px;">Question ${idx + 1}: ${q.q}</div>
-            <div class="review-opts">${optsHtml}</div>
-            <div class="review-exp"><strong>Explanation:</strong> ${q.explanation || 'No explanation provided.'}</div>
-        `;
-        list.appendChild(card);
-    });
-    
-    // Comprehensive scroll reset
-    scoreScreen.scrollTop = 0;
-    window.scrollTo({ top: 0, behavior: 'instant' });
-    scoreScreen.scrollTo({ top: 0, behavior: 'instant' });
-    
-    // Safety delay to ensure layout has shifted before final scroll
-    setTimeout(() => {
-        scoreScreen.scrollTop = 0;
-        window.scrollTo(0, 0);
-    }, 10);
-}
-
-function showReview() {
-    const container = document.getElementById('reviewContainer');
-    const list = document.getElementById('reviewList');
-    const btn = document.getElementById('btnShowReview');
-    
-    container.style.display = 'block';
-    btn.style.display = 'none';
-    list.innerHTML = '';
-    
-    examQs.forEach((q, idx) => {
-        const userAns = userAnswers[idx];
-        const correctAns = q.correct[0];
-        const isCorrect = userAns === correctAns;
-        
-        const card = document.createElement('div');
-        card.className = 'review-q-card';
-        
-        let optsHtml = '';
-        q.opts.forEach(opt => {
-            const letter = opt.charAt(0);
-            let stateClass = '';
-            if (letter === correctAns) stateClass = 'is-correct';
-            else if (letter === userAns && !isCorrect) stateClass = 'user-wrong';
-            
-            optsHtml += `<div class="review-opt ${stateClass}"><strong>${letter}</strong> ${opt.substring(2)}</div>`;
-        });
-        
-        card.innerHTML = `
-            <div class="status-tag ${isCorrect ? 'status-correct' : 'status-wrong'}">${isCorrect ? 'Correct' : 'Incorrect'}</div>
-            <div style="font-weight: bold; margin-bottom: 15px;">Question ${idx + 1}: ${q.q}</div>
-            <div class="review-opts">${optsHtml}</div>
-            <div class="review-exp"><strong>Explanation:</strong> ${q.explanation || 'No explanation provided.'}</div>
-        `;
-        list.appendChild(card);
-    });
-    
-    // Pearson VUE style: Results screen is usually a full-page scrollable area
-    // Ensure both the body and the fixed scoreScreen reset their scroll
-    document.body.scrollTop = 0;
-    document.documentElement.scrollTop = 0;
-    
-    const scoreScreen = document.getElementById('scoreScreen');
-    if (scoreScreen) {
-        scoreScreen.scrollTop = 0;
-        scoreScreen.scrollTo(0, 0);
-    }
-    
-    window.scrollTo(0, 0);
-}
-
-function showReview() {
-    const scoreScreen = document.getElementById('scoreScreen');
-    const container = document.getElementById('reviewContainer');
-    const list = document.getElementById('reviewList');
-    const btn = document.getElementById('btnShowReview');
-    
-    // 1. Prepare Content
-    container.style.display = 'block';
-    btn.style.display = 'none';
-    list.innerHTML = '';
-    
-    examQs.forEach((q, idx) => {
-        const userAns = userAnswers[idx];
-        const correctAns = q.correct[0];
-        const isCorrect = userAns === correctAns;
-        
-        const card = document.createElement('div');
-        card.className = 'review-q-card';
-        
-        let optsHtml = '';
-        q.opts.forEach(opt => {
-            const letter = opt.charAt(0);
-            let stateClass = '';
-            if (letter === correctAns) stateClass = 'is-correct';
-            else if (letter === userAns && !isCorrect) stateClass = 'user-wrong';
-            
-            optsHtml += `<div class="review-opt ${stateClass}"><strong>${letter}</strong> ${opt.substring(2)}</div>`;
-        });
-        
-        card.innerHTML = `
-            <div class="status-tag ${isCorrect ? 'status-correct' : 'status-wrong'}">${isCorrect ? 'Correct' : 'Incorrect'}</div>
-            <div style="font-weight: bold; margin-bottom: 15px;">Question ${idx + 1}: ${q.q}</div>
-            <div class="review-opts">${optsHtml}</div>
-            <div class="review-exp"><strong>Explanation:</strong> ${q.explanation || 'No explanation provided.'}</div>
-        `;
-        list.appendChild(card);
-    });
-    
-    // 2. The "Nuclear" Scroll Reset Logic
-    // This happened because browsers remember the scroll position of elements with "overflow: auto"
-    // when their content changes. We must force it back multiple times.
-    
-    const reset = () => {
-        scoreScreen.scrollTop = 0;
-        scoreScreen.scrollTo(0, 0);
-        window.scrollTo(0, 0);
-        document.body.scrollTop = 0;
-        document.documentElement.scrollTop = 0;
-    };
-
-    // Reset immediately
-    reset();
-    
-    // Reset after content paints (10ms)
-    setTimeout(reset, 10);
-    
-    // Reset after layout settles (100ms)
-    setTimeout(reset, 100);
+    // Jump to top of the fixed scroll container
+    screen.scrollTop = 0;
 }
 </script>
 </body>
