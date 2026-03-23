@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PMP Exam Archive | Project Management Nexus</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Space Grotesk', sans-serif; background-color: #050505; color: #ffffff; }
+        .nexus-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .nexus-card:hover {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: #3b82f6;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px -10px rgba(59, 130, 246, 0.3);
+        }
+        .text-gradient {
+            background: linear-gradient(to right, #3b82f6, #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-6">
+    <div class="max-w-4xl w-full">
+        <header class="text-center mb-16">
+            <h1 class="text-5xl md:text-7xl font-black mb-4 uppercase tracking-tighter">PMP <span class="text-gradient">EXAM</span> ARCHIVE</h1>
+            <p class="text-gray-400 font-mono text-sm tracking-widest uppercase italic">Initializing Assessment Modules...</p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Exam 1 -->
+            <a href="PMP_Exam1.html" class="nexus-card p-8 rounded-3xl group">
+                <div class="flex flex-col h-full">
+                    <span class="text-blue-500 font-black text-xs mb-2 tracking-widest uppercase">Module 01</span>
+                    <h3 class="text-2xl font-bold mb-4 group-hover:text-blue-400 transition-colors">Exam Simulation 1</h3>
+                    <p class="text-gray-500 text-sm mb-6 flex-grow">Core project management fundamentals and process groups.</p>
+                    <div class="flex items-center text-blue-500 font-bold text-xs uppercase tracking-widest">
+                        Launch Simulation →
+                    </div>
+                </div>
+            </a>
+
+            <!-- Exam 2 -->
+            <a href="PMP_Exam2.html" class="nexus-card p-8 rounded-3xl group">
+                <div class="flex flex-col h-full">
+                    <span class="text-blue-500 font-black text-xs mb-2 tracking-widest uppercase">Module 02</span>
+                    <h3 class="text-2xl font-bold mb-4 group-hover:text-blue-400 transition-colors">Exam Simulation 2</h3>
+                    <p class="text-gray-500 text-sm mb-6 flex-grow">Stakeholder management and communication strategies.</p>
+                    <div class="flex items-center text-blue-500 font-bold text-xs uppercase tracking-widest">
+                        Launch Simulation →
+                    </div>
+                </div>
+            </a>
+
+            <!-- Exam 3 -->
+            <a href="PMP_Exam3.html" class="nexus-card p-8 rounded-3xl group">
+                <div class="flex flex-col h-full">
+                    <span class="text-blue-500 font-black text-xs mb-2 tracking-widest uppercase">Module 03</span>
+                    <h3 class="text-2xl font-bold mb-4 group-hover:text-blue-400 transition-colors">Exam Simulation 3</h3>
+                    <p class="text-gray-500 text-sm mb-6 flex-grow">Risk assessment and quality control protocols.</p>
+                    <div class="flex items-center text-blue-500 font-bold text-xs uppercase tracking-widest">
+                        Launch Simulation →
+                    </div>
+                </div>
+            </a>
+
+            <!-- Exam 4 -->
+            <a href="PMP_Exam4.html" class="nexus-card p-8 rounded-3xl group">
+                <div class="flex flex-col h-full">
+                    <span class="text-blue-500 font-black text-xs mb-2 tracking-widest uppercase">Module 04</span>
+                    <h3 class="text-2xl font-bold mb-4 group-hover:text-blue-400 transition-colors">Exam Simulation 4</h3>
+                    <p class="text-gray-500 text-sm mb-6 flex-grow">Agile frameworks and hybrid project methodologies.</p>
+                    <div class="flex items-center text-blue-500 font-bold text-xs uppercase tracking-widest">
+                        Launch Simulation →
+                    </div>
+                </div>
+            </a>
+
+            <!-- Exam 5 -->
+            <a href="PMP_Exam5.html" class="nexus-card p-8 rounded-3xl group">
+                <div class="flex flex-col h-full">
+                    <span class="text-blue-500 font-black text-xs mb-2 tracking-widest uppercase">Module 05</span>
+                    <h3 class="text-2xl font-bold mb-4 group-hover:text-blue-400 transition-colors">Exam Simulation 5</h3>
+                    <p class="text-gray-500 text-sm mb-6 flex-grow">Business environment and organizational strategy.</p>
+                    <div class="flex items-center text-blue-500 font-bold text-xs uppercase tracking-widest">
+                        Launch Simulation →
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <footer class="mt-20 text-center border-t border-white/5 pt-8">
+            <p class="text-gray-600 font-mono text-[10px] tracking-widest uppercase">© 2026 Swun Yi Htet // PMP Certification Path</p>
+        </footer>
+    </div>
+</body>
+</html>
