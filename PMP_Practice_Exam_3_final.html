@@ -267,7 +267,7 @@ body {
 
 </style>
 </head>
-<body class="exam-mode" class="exam-mode" class="exam-mode" class="exam-mode" class="exam-mode">
+<body class="exam-mode" class="exam-mode" class="exam-mode" class="exam-mode" class="exam-mode" class="exam-mode">
 
 <div id="startScreen">
   <h1>PMP Practice Exam 3</h1>
@@ -920,6 +920,127 @@ function processPearsonSubmission() {
   }
   answered = true;
 }
+
+// Override showScore to show detailed marks
+function showScore() {
+  stopTimer();
+  document.getElementById('examScreen').style.display='none';
+  document.getElementById('scoreScreen').style.display='flex';
+  const total=examQuestions.length;
+  const pct=Math.round(correct/total*100);
+  
+  document.getElementById('scorePct').textContent = pct + '%';
+  document.getElementById('scoreDetails').innerHTML = `
+    <div style="font-size: 1.5rem; margin-bottom: 20px; font-weight: bold; color: #333;">
+        FINAL REPORT
+    </div>
+    <div style="font-size: 1.2rem; margin-bottom: 20px;">
+        Score: <strong>${correct} / ${total}</strong>
+    </div>
+    <div style="padding: 10px 30px; border-radius: 4px; display: inline-block; background: ${pct >= 70 ? '#e8f5e9' : '#ffebee'}; color: ${pct >= 70 ? '#2e7d32' : '#c62828'}; font-weight: bold; margin-bottom: 10px; border: 2px solid currentColor;">
+        RESULT: ${pct >= 70 ? 'PASS' : 'FAIL'}
+    </div>
+    <p style="margin-top: 15px; color: #666; font-size: 0.9rem;">Target passing score: 70%</p>
+  `;
+  
+  document.getElementById('scoreCorrect').textContent=correct;
+  document.getElementById('scoreWrong').textContent=wrong;
+  document.getElementById('scoreSkipped').textContent=skipped;
+}
+
+
+// --- Pearson VUE Realistic Override ---
+const styleSheet = document.createElement("style");
+styleSheet.innerText = `
+  #submitBtn { display: none !important; }
+  #skipBtn { display: none !important; }
+  .option-btn { border-bottom: 1px solid #eee !important; }
+  .option-btn:last-child { border-bottom: none !important; }
+`;
+document.head.appendChild(styleSheet);
+
+// Override restoreQuestion to ensure clean Pearson state
+const originalRestoreQuestion = window.restoreQuestion;
+window.restoreQuestion = function(idx) {
+    originalRestoreQuestion(idx);
+    const q = examQuestions[current];
+    const isMulti = q.correct.length > 1;
+    const saved = qHistory[current];
+    
+    // Always show Next/Back in Pearson UI
+    document.getElementById('nextBtn').style.display = (current < examQuestions.length - 1) ? 'inline-block' : 'inline-block';
+    document.getElementById('nextBtn').textContent = (current === examQuestions.length - 1) ? 'FINISH' : 'NEXT';
+    document.getElementById('backBtn').style.display = 'inline-block';
+    
+    // Update Question Number Header
+    document.getElementById('qNumber').innerHTML = `Question ${current + 1} of ${examQuestions.length}`;
+};
+
+// Override toggleOption for clear visual feedback and immediate Next button logic
+window.toggleOption = function(letter, btn, isMulti) {
+    if(answered) return;
+    
+    if(!isMulti) {
+        document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+        selected = [letter];
+        btn.classList.add('selected');
+        
+        // Pearson VUE selection logic: Show Next immediately
+        document.getElementById('nextBtn').style.display = 'inline-block';
+    } else {
+        const idx = selected.indexOf(letter);
+        if(idx === -1) { selected.push(letter); btn.classList.add('selected'); }
+        else { selected.splice(idx, 1); btn.classList.remove('selected'); }
+    }
+};
+
+// Ensure nextQuestion handles final calculation
+window.nextQuestion = function() {
+    if(!answered && selected.length > 0) {
+        processPearsonSubmission();
+    } else if (selected.length === 0) {
+        // Pearson behavior: Allow skipping via Next, but let's warn or just skip
+        processPearsonSubmission(); 
+    }
+    
+    if(current < examQuestions.length - 1) {
+        current++;
+        showQuestion();
+    } else {
+        showScore();
+    }
+};
+
+function processPearsonSubmission() {
+  const q = examQuestions[current];
+  const correctSet = new Set(q.correct);
+  const selectedSet = new Set(selected);
+  const isCorrect = [...correctSet].every(c => selectedSet.has(c)) && [...selectedSet].every(s => correctSet.has(s));
+  
+  if(selected.length > 0) {
+      if(isCorrect) correct++; else wrong++;
+      qHistory[current] = {selected:[...selected], answered:true, isCorrect:isCorrect, wasSkipped:false};
+  } else {
+      skipped++;
+      qHistory[current] = {selected:[], answered:true, isCorrect:false, wasSkipped:true};
+  }
+  answered = true;
+}
+
+// Global variable initialization check
+if (typeof examQuestions === 'undefined') { var examQuestions = []; }
+
+// Override startExam to ensure proper setup
+const originalStartExam = window.startExam;
+window.startExam = function() {
+    examQuestions = shuffle(ALL_QUESTIONS).slice(0, chosenCount);
+    current = 0; correct = 0; wrong = 0; skipped = 0; qHistory = [];
+    document.getElementById('startScreen').style.display = 'none';
+    document.getElementById('scoreScreen').style.display = 'none';
+    document.getElementById('examScreen').style.display = 'flex'; // Use flex for layout
+    startTimer();
+    showQuestion();
+};
 
 // Override showScore to show detailed marks
 function showScore() {
