@@ -261,17 +261,29 @@ function showReview() {
     screen.scrollTop = 0;
 }
 
-let audio = new Audio('https://cdn.pixabay.com/audio/2022/03/24/audio_731454174c.mp3'); // Smooth background track
-audio.loop = true; audio.volume = 0.4;
+
+let audio = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3');
+audio.loop = true;
+audio.volume = 0.5;
 let isPlaying = false;
 
 function toggleMusic() {
     const btn = document.getElementById('musicBtn');
     if (!isPlaying) {
-        audio.play().catch(e => console.log("Audio play blocked by browser. Interact with page first."));
-        btn.classList.add('playing');
-        btn.querySelector('span').textContent = 'Focus Mode: ON 🎵';
-        isPlaying = true;
+        // Reset and Play
+        audio.currentTime = 0;
+        const playPromise = audio.play();
+        
+        if (playPromise !== undefined) {
+            playPromise.then(_ => {
+                btn.classList.add('playing');
+                btn.querySelector('span').textContent = 'Focus Mode: ON 🎵';
+                isPlaying = true;
+            }).catch(error => {
+                console.error("Playback failed:", error);
+                alert("Please tap anywhere on the screen first, then try the music button again!");
+            });
+        }
     } else {
         audio.pause();
         btn.classList.remove('playing');
@@ -279,6 +291,7 @@ function toggleMusic() {
         isPlaying = false;
     }
 }
+
 </script>
 </body>
 </html>
