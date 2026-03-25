@@ -41,9 +41,9 @@ body { background: var(--p-bg); color: #333; font-family: Arial, sans-serif; mar
 
 .btn-home:hover { background: rgba(255,255,255,0.3); border-color: white; }
 
-.music-toggle { background: none; border: 1px solid rgba(255,255,255,0.3); color: white; padding: 4px 10px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; }
+
 .music-toggle:hover { background: rgba(255,255,255,0.1); border-color: white; }
-.music-toggle.playing { background: rgba(255,255,255,0.2); border-color: #4ade80; color: #4ade80; }
+
 </style>
 </head>
 <body>
@@ -63,7 +63,7 @@ body { background: var(--p-bg); color: #333; font-family: Arial, sans-serif; mar
 <div id="examScreen">
     <div class="exam-header">
         <h2>PMP Simulation</h2>
-        <button id="musicBtn" class="music-toggle" onclick="toggleMusic()"><span>Focus Mode: OFF</span></button><div id="timer" style="font-weight:bold">00:00:00</div>
+        <div id="timer" style="font-weight:bold">00:00:00</div>
     </div>
     <div class="exam-body">
         <div id="qNumber" class="q-number"></div>
@@ -262,35 +262,7 @@ function showReview() {
 }
 
 
-let audio = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3');
-audio.loop = true;
-audio.volume = 0.5;
-let isPlaying = false;
 
-function toggleMusic() {
-    const btn = document.getElementById('musicBtn');
-    if (!isPlaying) {
-        // Reset and Play
-        audio.currentTime = 0;
-        const playPromise = audio.play();
-        
-        if (playPromise !== undefined) {
-            playPromise.then(_ => {
-                btn.classList.add('playing');
-                btn.querySelector('span').textContent = 'Focus Mode: ON 🎵';
-                isPlaying = true;
-            }).catch(error => {
-                console.error("Playback failed:", error);
-                alert("Please tap anywhere on the screen first, then try the music button again!");
-            });
-        }
-    } else {
-        audio.pause();
-        btn.classList.remove('playing');
-        btn.querySelector('span').textContent = 'Focus Mode: OFF';
-        isPlaying = false;
-    }
-}
 
 </script>
 </body>
